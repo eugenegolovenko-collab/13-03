@@ -147,3 +147,7 @@ enabled = true
 
 <img width="997" height="534" alt="net sec_9" src="https://github.com/user-attachments/assets/417daa48-0c3d-4b7b-9d95-f48e5c66c8a6" />
 
+Что можно увидеть в логах `suricate`:
+<img width="1094" height="533" alt="net sec_10" src="https://github.com/user-attachments/assets/9ff6ec5a-73c0-4c4b-96d8-03db30a7ece4" />
+
+Незакрашенное - шум от SYN scan, желтое - брутфорсинг в SSH.
