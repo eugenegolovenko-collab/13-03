@@ -98,11 +98,52 @@
 
 Дополнительная информация по **Fail2Ban**:https://putty.org.ru/articles/fail2ban-ssh.html.
 
-### Решение 2
-
-
-
 *В качестве ответа пришлите события, которые попали в логи Suricata и Fail2Ban, прокомментируйте результат.*
 
 ### Решение 2
+
+1. Настройка и проверка работы **hydra**
+
+Для чистоты эксперимента на жертвенном хосте отключен fail2ban, настройки ssh по умолчению (MaxAuthTries=6, MaxSessions=10).
+
+В `~/hydra/` создаются файлы с рандомными именами пользователей и паролями (users.txt, pass.txt).
+
+Результат тестового брутфорсинга `hydra -L users.txt -P pass.txt -t 1 -V ssh://10.10.10.4`:
+
+<img width="727" height="443" alt="net sec_5" src="https://github.com/user-attachments/assets/3c3db33b-3cd2-4b5e-ae3f-aab0782de7f0" />
+
+2. Включение защиты SSH (Fail2Ban):
+
+*Конфигурация Fail2Ban выполнялась через файл `jail.local`, как рекомендовано официальной документацией, поскольку файл `jail.conf` является шаблонным и не предназначен для прямого редактирования.*
+
+`sudo nano /etc/fail2ban/jail.local`
+```cmd
+[sshd]
+enabled = true
+port = ssh
+logpath = %(sshd_log)s
+backend = systemd
+maxretry = 3
+findtime = 1m
+bantime = 5m
+
+[nginx-http-auth]
+enabled = true
+
+[nginx-botsearch]
+enabled = true
+```
+Проверка:
+
+<img width="564" height="75" alt="net sec_6" src="https://github.com/user-attachments/assets/6987b11d-eed5-44e1-8ff9-e758a3590585" />
+
+Запускаем брутфорсинг `ssh`
+
+<img width="728" height="553" alt="net sec_7" src="https://github.com/user-attachments/assets/92069551-684b-4632-9731-239996214d1f" />
+
+Видно, что атака обнаружена и IP банится.
+
+<img width="854" height="188" alt="net sec_8" src="https://github.com/user-attachments/assets/ca773ab7-fd37-4289-9986-c04d4ed2b4fd" />
+
+<img width="997" height="534" alt="net sec_9" src="https://github.com/user-attachments/assets/417daa48-0c3d-4b7b-9d95-f48e5c66c8a6" />
 
